@@ -42,41 +42,19 @@ PTree::PTree(float sideLength, float angle, Uint32 depth) {
     //generate tree points
     auto treePoints = generateTree({0, 0}, {sideLength, 0}, angle, depth);
 
-    //convert points into vertex array
-    std::array<sf::Color, 27> colors = {
+    // array of colors used 
+    std::array<sf::Color, 3> colors = {
+        sf::Color::Red,
         sf::Color::Green,
-        sf::Color::Green,
-        sf::Color::Green,
-        sf::Color::Green,
-        sf::Color::Green,
-        sf::Color::Green,
-        sf::Color::Green,
-        sf::Color::Green,
-        sf::Color::Green,
-        sf::Color::Yellow,
-        sf::Color::Yellow,
-        sf::Color::Yellow,
-        sf::Color::Yellow,
-        sf::Color::Yellow,
-        sf::Color::Yellow,
-        sf::Color::Yellow,
-        sf::Color::Yellow,
-        sf::Color::Yellow,
-        sf::Color::Blue,
-        sf::Color::Blue,
-        sf::Color::Blue,
-        sf::Color::Blue,
-        sf::Color::Blue,
-        sf::Color::Blue,
-        sf::Color::Blue,
-        sf::Color::Blue,
-        sf::Color::Blue
+        sf::Color::Yellow
     };
+
+    //convert points into vertex array
     mVertices.reserve(treePoints.size());
-    std::transform(treePoints.begin(), treePoints.end(), std::back_inserter(mVertices),
-        [&colors, cidx = -1] (const auto& ele) mutable {
-            cidx = (cidx + 1) % colors.size();
-            return sf::Vertex(ele, colors[cidx]);
+    std::transform(treePoints.begin(), treePoints.end(), 
+                   std::back_inserter(mVertices),
+        [colors, j = 0, color = 0] (const auto& ele) mutable {
+            return sf::Vertex(ele, colors[color++ % 3]);
         }
     );
 }
