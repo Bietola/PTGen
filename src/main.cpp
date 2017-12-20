@@ -44,7 +44,7 @@ PTree::PTree(float sideLength, float angle, Uint32 depth) {
 
     //convert points into vertex array
     std::array<sf::Color, 3> colors = {
-        sf::Color::Blue,
+        sf::Color::White,
         sf::Color::Green,
         sf::Color::Yellow
     };
@@ -97,7 +97,7 @@ PTree::generateTree(const sf::Vector2f& baseP1, const sf::Vector2f& baseP2, floa
     auto node = generateNode(baseP1, baseP2, angle);
 
     //recurse right
-    auto rightTreePoints = generateTree(node.triangleP, node.topP2, angle, depth - 1);
+    //TODO auto rightTreePoints = generateTree(node.triangleP, node.topP2, angle, depth - 1);
 
     //recurse left
     auto leftTreePoints = generateTree(node.topP1, node.triangleP, angle, depth - 1); 
@@ -105,7 +105,7 @@ PTree::generateTree(const sf::Vector2f& baseP1, const sf::Vector2f& baseP2, floa
     //join outputs
     auto nodePoints = node.calcVertexPositions();
     treePoints.insert(treePoints.end(), nodePoints.begin(), nodePoints.end());
-    treePoints.insert(treePoints.end(), rightTreePoints.begin(), rightTreePoints.end());
+    //TODO treePoints.insert(treePoints.end(), rightTreePoints.begin(), rightTreePoints.end());
     treePoints.insert(treePoints.end(), leftTreePoints.begin(), leftTreePoints.end());
 
     //return
