@@ -25,22 +25,23 @@ struct PNode {
 //the one and only Pythagoras Tree class
 class PTree: public sf::Drawable, public sf::Transformable {
     public:
-        PTree(float sideLength, float angle, Uint32 depth);
+        PTree(float sideLength, float angle, Uint32 leftDepth, Uint32 rightDepth);
 
     private:
         std::vector<sf::Vertex> mVertices;
 
         static PNode generateNode(const sf::Vector2f& baseP1, const sf::Vector2f& baseP2, float angle);
-        static std::vector<sf::Vector2f> generateTree(const sf::Vector2f& baseP1, const sf::Vector2f& baseP2, float angle, Uint32 depth);
+        static std::vector<sf::Vector2f> generateTree(const sf::Vector2f& baseP1, const sf::Vector2f& baseP2, float angle,
+                                                      Uint32 leftDepth, Uint32 rightDepth);
     
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 };
 
 //actually generates the tree class
 //  NB: the functions below do the actual work
-PTree::PTree(float sideLength, float angle, Uint32 depth) {
+PTree::PTree(float sideLength, float angle, Uint32 leftDepth, Uint32 rightDepth) {
     //generate tree points
-    auto treePoints = generateTree({0, 0}, {sideLength, 0}, angle, depth);
+    auto treePoints = generateTree({0, 0}, {sideLength, 0}, angle, leftDepth, rightDepth);
 
     //convert points into vertex array
     std::array<sf::Color, 3> colors = {
@@ -85,9 +86,10 @@ PNode PTree::generateNode(const sf::Vector2f& baseP1, const sf::Vector2f& baseP2
 //generates a whole tree (returning its points in drawing order) given the parameters of the root node and
 //the tree depth
 std::vector<sf::Vector2f>
-PTree::generateTree(const sf::Vector2f& baseP1, const sf::Vector2f& baseP2, float angle, Uint32 depth) {
+PTree::generateTree(const sf::Vector2f& baseP1, const sf::Vector2f& baseP2, float angle,
+                    Uint32 leftDepth, Uint32 rightDepth) {
     //base case - done generating the tree
-    if(!depth)
+    if(leftDepth <= 0 && rightDepth <= 0)
         return {};
 
     //result of function
@@ -96,17 +98,21 @@ PTree::generateTree(const sf::Vector2f& baseP1, const sf::Vector2f& baseP2, floa
     //generate the node and retrieve some needed data
     auto node = generateNode(baseP1, baseP2, angle);
 
-    //recurse right
-    auto rightTreePoints = generateTree(node.triangleP, node.topP2, angle, depth - 1);
-
-    //recurse left
-    auto leftTreePoints = generateTree(node.topP1, node.triangleP, angle, depth - 1); 
-
-    //join outputs
+    //insert node points
     auto nodePoints = node.calcVertexPositions();
     treePoints.insert(treePoints.end(), nodePoints.begin(), nodePoints.end());
-    treePoints.insert(treePoints.end(), rightTreePoints.begin(), rightTreePoints.end());
-    treePoints.insert(treePoints.end(), leftTreePoints.begin(), leftTreePoints.end());
+
+    //recurse right
+    if(rightDepth > 0) {
+        auto rightTreePoints = generateTree(node.triangleP, node.topP2, angle, leftDepth - 1, rightDepth - 1);
+        treePoints.insert(treePoints.end(), rightTreePoints.begin(), rightTreePoints.end());
+    }
+
+    //recurse left
+    if(leftDepth > 0) {
+        auto leftTreePoints = generateTree(node.topP1, node.triangleP, angle, leftDepth - 1, rightDepth - 1); 
+        treePoints.insert(treePoints.end(), leftTreePoints.begin(), leftTreePoints.end());
+    }
 
     //return
     return treePoints;
@@ -128,7 +134,7 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(1800, 1000), "PTGen");
 
     //create tree
-    PTree ptree(200, 30, 10);
+    PTree ptree(200, 30, 1, 2);
     ptree.move(900, 1000);
 
     //main loop
