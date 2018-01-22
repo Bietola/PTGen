@@ -17,8 +17,8 @@ struct PNode {
    sf::Vector2f baseP1, baseP2, topP1, topP2, triangleP;
 
     auto calcVertexPositions() const {
-        return std::vector<sf::Vector2f>{baseP1, baseP2, topP2, topP2, topP1, baseP1, topP1, topP2, triangleP};
-        //!OLD return std::vector<sf::Vector2f>{baseP1, baseP2, topP1, topP2, triangleP};
+        // return std::vector<sf::Vector2f>{baseP1, baseP2, topP2, topP2, topP1, baseP1, topP1, topP2, triangleP};
+        return std::vector<sf::Vector2f>{baseP1, baseP2, topP1, topP2, triangleP};
     }
 };
 
@@ -51,7 +51,7 @@ PTree::PTree(float sideLength, float angle, Uint32 depth) {
     mVertices.reserve(treePoints.size());
     std::transform(treePoints.begin(), treePoints.end(), std::back_inserter(mVertices),
         [&colors, cidx = 0, ccidx = 0] (const auto& ele) mutable {
-            if(ccidx++ % 9 == 0) ++cidx;
+            if(ccidx++ % 5 == 0) ++cidx;
             return sf::Vertex(ele, colors[cidx % 3]);
         }
     );
@@ -118,7 +118,7 @@ void PTree::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     states.transform *= getTransform();
 
     //draw tree
-    target.draw(&mVertices[0], mVertices.size(), sf::Triangles, states);
+    target.draw(&mVertices[0], mVertices.size(), sf::TrianglesStrip, states);
 }
 
 
