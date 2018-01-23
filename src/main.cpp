@@ -43,16 +43,14 @@ PTree::PTree(float sideLength, float angle, Uint32 depth) {
     auto treePoints = generateTree({0, 0}, {sideLength, 0}, angle, depth);
 
     //convert points into vertex array
-    std::array<sf::Color, 3> colors = {
-        sf::Color::Blue,
-        sf::Color::Green,
-        sf::Color::Yellow
+    std::array<sf::Color, 1> colors = {
+        sf::Color::White
     };
     mVertices.reserve(treePoints.size());
     std::transform(treePoints.begin(), treePoints.end(), std::back_inserter(mVertices),
         [&colors, cidx = 0, ccidx = 0] (const auto& ele) mutable {
             if(ccidx++ % 9 == 0) ++cidx;
-            return sf::Vertex(ele, colors[cidx % 3]);
+            return sf::Vertex(ele, sf::Color::White);
         }
     );
 }
