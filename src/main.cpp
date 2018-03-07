@@ -5,11 +5,13 @@
 #include <vector>
 #include <array>
 #include <algorithm>
+#include <random>
 
 #include "utils.h"
 
 #include <SFML/Graphics.hpp>
 
+//
 using sf::Uint32;
 
 //a Pythagoras Node, which is really just a square with a right-angled triangle sitting on top...
@@ -43,16 +45,25 @@ PTree::PTree(float sideLength, float angle, Uint32 depth) {
     auto treePoints = generateTree({0, 0}, {sideLength, 0}, angle, depth);
 
     //convert points into vertex array
-    std::array<sf::Color, 3> colors = {
-        sf::Color::Blue,
-        sf::Color::Green,
-        sf::Color::Yellow
+    std::array<sf::Color, 7> colors = {
+        sf::Color(148, 0, 211),
+        sf::Color(75, 0, 130),
+        sf::Color(0, 0, 255),
+        sf::Color(0, 255, 0),
+        sf::Color(255, 255, 0),
+        sf::Color(255, 127, 0),
+        sf::Color(255, 0 , 0)
+
     };
     mVertices.reserve(treePoints.size());
     std::transform(treePoints.begin(), treePoints.end(), std::back_inserter(mVertices),
         [&colors, cidx = 0, ccidx = 0] (const auto& ele) mutable {
-            if(ccidx++ % 9 == 0) ++cidx;
-            return sf::Vertex(ele, colors[cidx % 3]);
+            if(ccidx++ % /*9*/9 == 0) {
+                ++cidx;
+                if(rand() % 2) 
+                    std::shuffle(colors.begin(), colors.end(), std::default_random_engine());
+            } 
+            return sf::Vertex(ele, colors[cidx % colors.size()]);
         }
     );
 }
@@ -128,8 +139,9 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(1800, 1000), "PTGen");
 
     //create tree
-    PTree ptree(200, 30, 10);
-    ptree.move(900, 1000);
+    PTree ptree(200, /*30*/18, 23);
+    ptree.move(1250, 775);
+    ptree.scale(0.65, 0.65);
 
     //main loop
     sf::Event event;
