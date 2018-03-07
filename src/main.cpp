@@ -18,7 +18,7 @@ struct PNode {
 
     auto calcVertexPositions() const {
         // return std::vector<sf::Vector2f>{baseP1, baseP2, topP2, topP2, topP1, baseP1, topP1, topP2, triangleP};
-        return std::vector<sf::Vector2f>{baseP1, baseP2, topP1, topP2, triangleP};
+        return std::vector<sf::Vector2f>{topP1, topP2, triangleP};
     }
 };
 
@@ -105,7 +105,6 @@ PTree::generateTree(const sf::Vector2f& baseP1, const sf::Vector2f& baseP2, floa
     //join outputs
     auto nodePoints = node.calcVertexPositions();
     treePoints.insert(treePoints.end(), nodePoints.begin(), nodePoints.end());
-    //TODO treePoints.insert(treePoints.end(), rightTreePoints.begin(), rightTreePoints.end());
     treePoints.insert(treePoints.end(), leftTreePoints.begin(), leftTreePoints.end());
 
     //return
@@ -128,7 +127,7 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(1800, 1000), "PTGen");
 
     //create tree
-    PTree ptree(200, 30, 10);
+    PTree ptree(200, 30, 2);
     ptree.move(900, 1000);
 
     //main loop
